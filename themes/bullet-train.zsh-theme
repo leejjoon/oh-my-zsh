@@ -15,6 +15,25 @@
 
 VIRTUAL_ENV_DISABLE_PROMPT=true
 
+# # Define order and content of prompt
+# if [ ! -n "${BULLETTRAIN_PROMPT_ORDER+1}" ]; then
+#   BULLETTRAIN_PROMPT_ORDER=(
+#     time
+#     status
+#     custom
+#     context
+#     dir
+#     perl
+#     ruby
+#     virtualenv
+#     nvm
+#     go
+#     git
+#     hg
+#     cmd_exec_time
+#   )
+# fi
+
 # Define order and content of prompt
 if [ ! -n "${BULLETTRAIN_PROMPT_ORDER+1}" ]; then
   BULLETTRAIN_PROMPT_ORDER=(
@@ -23,13 +42,10 @@ if [ ! -n "${BULLETTRAIN_PROMPT_ORDER+1}" ]; then
     custom
     context
     dir
-    perl
-    ruby
     virtualenv
+    condavirtualenv
     nvm
-    go
     git
-    hg
     cmd_exec_time
   )
 fi
@@ -98,7 +114,8 @@ if [ ! -n "${BULLETTRAIN_VIRTUALENV_FG+1}" ]; then
   BULLETTRAIN_VIRTUALENV_FG=white
 fi
 if [ ! -n "${BULLETTRAIN_VIRTUALENV_PREFIX+1}" ]; then
-  BULLETTRAIN_VIRTUALENV_PREFIX=🐍
+  #BULLETTRAIN_VIRTUALENV_PREFIX=🐍
+  BULLETTRAIN_VIRTUALENV_PREFIX=
 fi
 
 # NVM
@@ -547,6 +564,20 @@ prompt_virtualenv() {
     prompt_segment $BULLETTRAIN_VIRTUALENV_BG $BULLETTRAIN_VIRTUALENV_FG $BULLETTRAIN_VIRTUALENV_PREFIX" $(basename $virtualenv_path)"
   elif which pyenv &> /dev/null; then
     prompt_segment $BULLETTRAIN_VIRTUALENV_BG $BULLETTRAIN_VIRTUALENV_FG $BULLETTRAIN_VIRTUALENV_PREFIX" $(pyenv version | sed -e 's/ (set.*$//' | tr '\n' ' ' | sed 's/.$//')"
+  fi
+}
+
+# Virtualenv: current working virtualenv
+prompt_condavirtualenv() {
+  if [[ $BULLETTRAIN_VIRTUALENV_SHOW == false ]]; then
+    return
+  fi
+
+  local virtualenv_path="$CONDA_DEFAULT_ENV"
+  if [[ -n $virtualenv_path && -n $VIRTUAL_ENV_DISABLE_PROMPT ]]; then
+    prompt_segment $BULLETTRAIN_VIRTUALENV_BG $BULLETTRAIN_VIRTUALENV_FG $BULLETTRAIN_VIRTUALENV_PREFIX" $(basename $virtualenv_path)"
+  elif which conda &> /dev/null; then
+    prompt_segment $BULLETTRAIN_VIRTUALENV_BG $BULLETTRAIN_VIRTUALENV_FG $BULLETTRAIN_VIRTUALENV_PREFIX
   fi
 }
 
